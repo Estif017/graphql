@@ -5,6 +5,9 @@ const {MONGODB}=require('./config')
 const typeDefs=require('./graphql/typeDefs')
 const resolvers=require('./graphql/resolvers')
 
+const server=new ApolloServer({
+    typeDefs,resolvers
+})
 mongoose.
     connect(MONGODB,{useNewUrlParser:true,useUnifiedTopology: true })
     .then(()=>{
@@ -13,6 +16,3 @@ mongoose.
     })
     .then(res=>console.log(`Server is running at port ${res.url}`))
 
-const server=new ApolloServer({
-    typeDefs,resolvers
-})

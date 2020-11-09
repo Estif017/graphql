@@ -7,6 +7,7 @@ module.exports = {
                 const posts = await Post.find()
                 return posts   
             } catch (error) {
+                console.log('error occuered');
                 throw new Error(error)
             }
         }

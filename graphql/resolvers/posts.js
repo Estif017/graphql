@@ -31,6 +31,10 @@ module.exports = {
         async createPost(_,{body},context){
             const user =checkAuth(context)
             //passed the middleware(checke the user loged in )
+
+            if(args.body.trim()===''){
+                throw new Error("Post body must not be empity")
+            }
             const newPost=new Post({
                 body,
                 user:user.id,
@@ -38,6 +42,9 @@ module.exports = {
                 createdAt:new Date().toISOString()
             })
             const post = await newPost.save()
+            context.pubsub.publish("NEW_POST",{
+                newPost:post
+            })
             return post
         },
         async deletePost(_,{postId},context){
@@ -54,6 +61,31 @@ module.exports = {
                 console.log(error.message);
                 throw new Error(error)
             }
+        },
+        likePost:async(_,{postId},context)=>{
+            const {username}=checkAuth(context)
+            const post =await Post.findById(postId)
+            if(post){
+                if(post.likes.find(like=>like.username===username)){
+                    //user already liked the post, so unlike it
+                    post.likes=post.likes.filter(like=>like.username!==username)
+                }else{
+                    //like the post
+                    post.likes.push({
+                        username,
+                        createdAt:new Date().toISOString()
+                    })
+                }
+                await post.save()
+                return post
+            }else{
+                throw new UserInputError("Post not found")
+            }
         }
     },
+    Subscription:{
+        newPost:{
+            subscribe:(_,__,{pubsub})=>pubsub.asyncIterator("NEW_POST")
+        }
+    }
 }

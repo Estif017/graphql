@@ -13,7 +13,7 @@ const MenuBar=()=> {
 
 
     return (
-        <Menu pointing secondary>
+        <Menu pointing secondary size="massive" color="teal" style={{'margin':'0 auto'}} >
           <Menu.Item
             name='home'
             active={activeItem === 'home'}

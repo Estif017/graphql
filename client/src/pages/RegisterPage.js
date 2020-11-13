@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import {useHistory}from 'react-router-dom'
 import {useMutation,gql}from'@apollo/client'
 import { Button, Form } from 'semantic-ui-react';
 
 import { useForm } from '../utils/hooks'
+import AuthContext from '../context/authContext/AuthContext';
 
 const RegisterPage = () => {
+    const {userRegister}=useContext(AuthContext)
     const history=useHistory()
     const [error,setError]=useState({})
     const {values,onSubmit,onChange}=useForm(registerUser,{
@@ -15,7 +17,8 @@ const RegisterPage = () => {
         confirmPassword: ''
     })
     const [addUser,{loading}]=useMutation(REGISTER_USER,{
-        update(_,result){
+        update(_,{data:{register:userData}}){
+            userRegister(userData)
             history.push('/')
         },
         onError(err) {
